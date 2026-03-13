@@ -123,6 +123,12 @@
         nav a:hover {
             color: var(--primary);
         }
+        .dropdown { position: relative; display: inline-block; }
+        .dropdown-content { display: none; position: absolute; background: #12121a; min-width: 200px; box-shadow: 0 8px 16px rgba(0,0,0,0.3); border-radius: 8px; z-index: 100; right: 0; }
+        .dropdown:hover .dropdown-content { display: block; }
+        .dropdown-content a { display: block; padding: 12px 16px; color: #e0e0e0; text-decoration: none; }
+        .dropdown-content a:hover { background: #1a1a2e; border-radius: 8px; }
+
         
         /* Hero */
         .hero {
@@ -401,6 +407,13 @@
         <nav>
             <a href="index.html">Home</a>
             <a href="about.html">About</a>
+            <div class="dropdown">
+                <a href="#">Projects ▾</a>
+                <div class="dropdown-content">
+                    <a href="projects/data/">📊 Data Collector</a>
+                    <a href="https://claw-fluxweaver.github.io/kronang-dashboard/">📅 Kronäng Dashboard</a>
+                </div>
+            </div>
         </nav>
     </header>
     

@@ -100,6 +100,51 @@
         .legend-green { background: #22c55e; }
         .legend-yellow { background: #eab308; }
         .legend-red { background: #ef4444; }
+        
+        /* Histogram */
+        .histogram { 
+            display: flex; 
+            align-items: flex-end; 
+            justify-content: space-between;
+            height: 100px; 
+            padding: 10px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+            gap: 4px;
+            margin-top: 15px;
+        }
+        .histogram-bar {
+            flex: 1;
+            background: linear-gradient(to top, #00d4ff, #7b2ff7);
+            border-radius: 3px 3px 0 0;
+            min-width: 20px;
+            position: relative;
+            transition: all 0.3s;
+        }
+        .histogram-bar:hover { opacity: 0.8; transform: scaleY(1.02); }
+        .histogram-bar .tooltip {
+            display: none;
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1a1a2e;
+            padding: 5px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            white-space: nowrap;
+            z-index: 10;
+            border: 1px solid #333;
+        }
+        .histogram-bar:hover .tooltip { display: block; }
+        .histogram-labels { 
+            display: flex; 
+            justify-content: space-between;
+            margin-top: 5px; 
+            font-size: 0.65rem;
+            color: #666;
+        }
+        
         .card.weather { border-top: 4px solid #22c55e; }
         .card.electricity { border-top: 4px solid #eab308; }
         .card.property { border-top: 4px solid #a855f7; }
@@ -112,7 +157,7 @@
     <div class="container">
         <div class="header">
             <h1>📡 FluxWeaver Data Collector</h1>
-            <p class="timestamp">Senaste uppdatering: 2026-03-13 19:04:50</p>
+            <p class="timestamp">Senaste uppdatering: 2026-03-13 20:32:31</p>
         </div>
         
         <div class="grid">
@@ -123,7 +168,7 @@
                 </div>
                 <div class="stat-row">
                     <span class="stat-label">Unika tåg</span>
-                    <span class="stat-value">3,612</span>
+                    <span class="stat-value">3,629</span>
                 </div>
                 <div class="stat-row">
                     <span class="stat-label">Stationer</span>
@@ -131,15 +176,15 @@
                 </div>
                 <div class="stat-row">
                     <span class="stat-label">Försenade (>2 min)</span>
-                    <span class="stat-value">6,308</span>
+                    <span class="stat-value">6,946</span>
                 </div>
                 <div class="stat-row">
                     <span class="stat-label">Pålitlighet</span>
-                    <span class="stat-value on-time">86.6%</span>
+                    <span class="stat-value on-time">86.2%</span>
                 </div>
                 <div class="stat-row">
                     <span class="stat-label">Snittförsening</span>
-                    <span class="stat-value delay">0.9 min</span>
+                    <span class="stat-value delay">1.0 min</span>
                 </div>
                 <div class="stat-row">
                     <span class="stat-label">Längsta försening</span>
@@ -153,14 +198,42 @@
                         <div class="history-bar" style="height: 12.5%; background: #22c55e;" title="">
                             <span class="tooltip">2026-03-12<br>12.5% försenade</span>
                         </div>
-                        <div class="history-bar" style="height: 13.9%; background: #22c55e;" title="">
-                            <span class="tooltip">2026-03-13<br>13.9% försenade</span>
+                        <div class="history-bar" style="height: 14.5%; background: #22c55e;" title="">
+                            <span class="tooltip">2026-03-13<br>14.5% försenade</span>
                         </div>
                     </div>
                     <div class="history-legend">
                         <span class="legend-item"><span class="legend-dot legend-green"></span> <20%</span>
                         <span class="legend-item"><span class="legend-dot legend-yellow"></span> 20-40%</span>
                         <span class="legend-item"><span class="legend-dot legend-red"></span> >40%</span>
+                    </div>
+                </div>
+                
+                <div class="history-section">
+                    <h3>📊 Fördelning förseningar</h3>
+                    <div class="histogram">
+                        
+                        <div class="histogram-bar" style="height: 100.0%;" title="">
+                            <span class="tooltip">0 (i tid) min<br>29,595 tåg</span>
+                        </div>
+                        <div class="histogram-bar" style="height: 57.1%;" title="">
+                            <span class="tooltip">1-10 min<br>16,894 tåg</span>
+                        </div>
+                        <div class="histogram-bar" style="height: 3.4%;" title="">
+                            <span class="tooltip">11-20 min<br>996 tåg</span>
+                        </div>
+                        <div class="histogram-bar" style="height: 0.8%;" title="">
+                            <span class="tooltip">21-30 min<br>226 tåg</span>
+                        </div>
+                        <div class="histogram-bar" style="height: 0.6%;" title="">
+                            <span class="tooltip">31-60 min<br>165 tåg</span>
+                        </div>
+                        <div class="histogram-bar" style="height: 7.9%;" title="">
+                            <span class="tooltip">60+ min<br>2,344 tåg</span>
+                        </div>
+                    </div>
+                    <div class="histogram-labels">
+                        <span>0 (i tid)</span><span>1-10</span><span>11-20</span><span>21-30</span><span>31-60</span><span>60+</span>
                     </div>
                 </div>
             </div>

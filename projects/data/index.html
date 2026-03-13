@@ -54,6 +54,52 @@
         .stat-value.price-high { color: #ef4444; }
         .stat-value.price-low { color: #22c55e; }
         .card.trains { border-top: 4px solid #f97316; }
+        .history-section { margin-top: 30px; }
+        .history-section h3 { color: #00d4ff; margin-bottom: 15px; }
+        .history-chart { 
+            display: flex; 
+            align-items: flex-end; 
+            gap: 3px; 
+            height: 120px; 
+            padding: 10px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+        }
+        .history-bar {
+            flex: 1;
+            background: linear-gradient(to top, #22c55e, #eab308, #ef4444);
+            border-radius: 2px 2px 0 0;
+            min-width: 8px;
+            position: relative;
+        }
+        .history-bar:hover { opacity: 0.8; }
+        .history-bar .tooltip {
+            display: none;
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1a1a2e;
+            padding: 5px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            white-space: nowrap;
+            z-index: 10;
+        }
+        .history-bar:hover .tooltip { display: block; }
+        .history-legend { 
+            display: flex; 
+            justify-content: center; 
+            gap: 20px; 
+            margin-top: 10px; 
+            font-size: 0.75rem;
+            color: #888;
+        }
+        .legend-item { display: flex; align-items: center; gap: 5px; }
+        .legend-dot { width: 10px; height: 10px; border-radius: 2px; }
+        .legend-green { background: #22c55e; }
+        .legend-yellow { background: #eab308; }
+        .legend-red { background: #ef4444; }
         .card.weather { border-top: 4px solid #22c55e; }
         .card.electricity { border-top: 4px solid #eab308; }
         .card.property { border-top: 4px solid #a855f7; }
@@ -66,7 +112,7 @@
     <div class="container">
         <div class="header">
             <h1>📡 FluxWeaver Data Collector</h1>
-            <p class="timestamp">Senaste uppdatering: 2026-03-13 15:01:19</p>
+            <p class="timestamp">Senaste uppdatering: 2026-03-13 19:04:50</p>
         </div>
         
         <div class="grid">
@@ -77,27 +123,45 @@
                 </div>
                 <div class="stat-row">
                     <span class="stat-label">Unika tåg</span>
-                    <span class="stat-value">3,537</span>
+                    <span class="stat-value">3,612</span>
                 </div>
                 <div class="stat-row">
                     <span class="stat-label">Stationer</span>
-                    <span class="stat-value">1002</span>
+                    <span class="stat-value">1008</span>
                 </div>
                 <div class="stat-row">
-                    <span class="stat-label">Försenade tåg</span>
-                    <span class="stat-value">13,532</span>
+                    <span class="stat-label">Försenade (>2 min)</span>
+                    <span class="stat-value">6,308</span>
                 </div>
                 <div class="stat-row">
                     <span class="stat-label">Pålitlighet</span>
-                    <span class="stat-value on-time">65.5%</span>
+                    <span class="stat-value on-time">86.6%</span>
                 </div>
                 <div class="stat-row">
                     <span class="stat-label">Snittförsening</span>
-                    <span class="stat-value delay">0.8 min</span>
+                    <span class="stat-value delay">0.9 min</span>
                 </div>
                 <div class="stat-row">
                     <span class="stat-label">Längsta försening</span>
                     <span class="stat-value delay-large">146.0 min</span>
+                </div>
+                
+                <div class="history-section">
+                    <h3>📈 30 dagars historik</h3>
+                    <div class="history-chart">
+                        
+                        <div class="history-bar" style="height: 12.5%; background: #22c55e;" title="">
+                            <span class="tooltip">2026-03-12<br>12.5% försenade</span>
+                        </div>
+                        <div class="history-bar" style="height: 13.9%; background: #22c55e;" title="">
+                            <span class="tooltip">2026-03-13<br>13.9% försenade</span>
+                        </div>
+                    </div>
+                    <div class="history-legend">
+                        <span class="legend-item"><span class="legend-dot legend-green"></span> <20%</span>
+                        <span class="legend-item"><span class="legend-dot legend-yellow"></span> 20-40%</span>
+                        <span class="legend-item"><span class="legend-dot legend-red"></span> >40%</span>
+                    </div>
                 </div>
             </div>
             

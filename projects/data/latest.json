@@ -1,0 +1,19 @@
+{
+  "publishedAt": "2026-06-03T22:29:50.230038+00:00",
+  "source": "local-data-collector",
+  "dbSizeBytes": 1256787968,
+  "counts": {
+    "train_announcements": 5758138,
+    "weather": 6480,
+    "weather_daily": 15,
+    "electricity_prices": 0,
+    "electricity_daily": 0,
+    "property_transfers": 0
+  },
+  "latest": {
+    "trains": "2026-06-03T22:24:07.953350",
+    "weather": "2026-06-03T21:00:00",
+    "electricity": "",
+    "property": ""
+  }
+}

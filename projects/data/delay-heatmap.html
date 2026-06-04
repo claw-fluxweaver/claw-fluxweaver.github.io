@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Förseningar över Sverige</title>
+    <style>
+        :root {
+            --bg: #070b16;
+            --panel: rgba(13, 20, 39, 0.88);
+            --panel-strong: rgba(19, 27, 52, 0.96);
+            --text: #edf2ff;
+            --muted: #97a3c6;
+            --line: rgba(151, 163, 198, 0.16);
+            --accent: #6ee7ff;
+            --accent-2: #9b8cff;
+            --shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            min-height: 100%;
+        }
+
+        body {
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at top left, rgba(110, 231, 255, 0.12), transparent 28%),
+                radial-gradient(circle at 80% 20%, rgba(155, 140, 255, 0.14), transparent 26%),
+                linear-gradient(180deg, #060914 0%, #0b1020 100%);
+            background-attachment: fixed;
+        }
+
+        .shell {
+            max-width: 1500px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .hero {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            gap: 18px;
+            align-items: stretch;
+            margin-bottom: 18px;
+        }
+
+        .hero-card, .panel {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(16px);
+        }
+
+        .hero-card {
+            padding: 28px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .hero-card::before {
+            content: "";
+            position: absolute;
+            inset: auto -8% -20% auto;
+            width: 320px;
+            height: 320px;
+            background: radial-gradient(circle, rgba(110, 231, 255, 0.16), transparent 64%);
+            pointer-events: none;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 14px;
+            border-radius: 999px;
+            border: 1px solid rgba(110, 231, 255, 0.28);
+            background: rgba(110, 231, 255, 0.08);
+            color: var(--accent);
+            font-size: 0.84rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            margin: 18px 0 10px;
+            font-size: clamp(2rem, 4vw, 4rem);
+            line-height: 0.98;
+        }
+
+        .lede {
+            max-width: 70ch;
+            color: var(--muted);
+            font-size: 1.03rem;
+            line-height: 1.65;
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 22px;
+        }
+
+        .button {
+            appearance: none;
+            border: 1px solid transparent;
+            border-radius: 999px;
+            padding: 12px 18px;
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.04);
+            text-decoration: none;
+            font-weight: 700;
+            transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+        }
+
+        .button:hover {
+            transform: translateY(-1px);
+            border-color: rgba(110, 231, 255, 0.35);
+            background: rgba(110, 231, 255, 0.08);
+        }
+
+        .button.primary {
+            background: linear-gradient(135deg, #60a5fa, #9b8cff);
+            color: #fff;
+        }
+
+        .button.primary:hover {
+            background: linear-gradient(135deg, #67b3ff, #a89cff);
+        }
+
+        .meta-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .meta-card {
+            background: var(--panel-strong);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 20px;
+            padding: 18px;
+            min-width: 0;
+        }
+
+        .meta-label {
+            color: var(--muted);
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .meta-value {
+            margin-top: 8px;
+            font-size: clamp(1.1rem, 2vw, 1.7rem);
+            font-weight: 800;
+            word-break: break-word;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 22px;
+            margin-bottom: 18px;
+        }
+
+        .range-group, .search-group {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .range-pill {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text);
+            border-radius: 999px;
+            padding: 10px 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+        }
+
+        .range-pill:hover {
+            transform: translateY(-1px);
+            border-color: rgba(110, 231, 255, 0.3);
+        }
+
+        .range-pill.active {
+            background: linear-gradient(135deg, #60a5fa, #9b8cff);
+            border-color: transparent;
+            color: white;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 260px;
+        }
+
+        .field label {
+            color: var(--muted);
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .field input {
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+            background: rgba(7, 11, 22, 0.72);
+            color: var(--text);
+            padding: 14px 16px;
+            font-size: 0.98rem;
+            min-width: 320px;
+        }
+
+        .field input:focus {
+            outline: none;
+            border-color: rgba(110, 231, 255, 0.45);
+            box-shadow: 0 0 0 4px rgba(110, 231, 255, 0.12);
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 1.2fr 0.95fr;
+            gap: 18px;
+        }
+
+        .panel {
+            padding: 22px;
+            overflow: hidden;
+        }
+
+        .panel h2 {
+            margin: 0 0 10px;
+            font-size: 1.18rem;
+        }
+
+        .panel .subtitle {
+            color: var(--muted);
+            margin-bottom: 16px;
+            font-size: 0.95rem;
+        }
+
+        .map-wrap {
+            position: relative;
+            overflow: hidden;
+            min-height: 620px;
+        }
+
+        .map-frame {
+            width: 100%;
+            height: 100%;
+            min-height: 620px;
+            border-radius: 18px;
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)),
+                radial-gradient(circle at center, rgba(110, 231, 255, 0.05), transparent 60%);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .map-caption {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-top: 12px;
+            color: var(--muted);
+            font-size: 0.88rem;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--muted);
+            font-size: 0.84rem;
+            padding: 7px 10px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .swatch {
+            width: 18px;
+            height: 18px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.25);
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 6px;
+            margin-bottom: 18px;
+        }
+
+        .summary-card {
+            padding: 16px;
+            border-radius: 18px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .summary-card .label {
+            color: var(--muted);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .summary-card .value {
+            margin-top: 8px;
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+
+        .station-name {
+            font-size: 1.55rem;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .station-subtitle {
+            color: var(--muted);
+            margin-bottom: 16px;
+        }
+
+        .heatmap-shell {
+            overflow-x: auto;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.03);
+        }
+
+        .heatmap {
+            min-width: 900px;
+            padding: 10px;
+        }
+
+        .heatmap-grid {
+            display: grid;
+            grid-template-columns: 118px repeat(24, minmax(28px, 1fr));
+            gap: 6px;
+        }
+
+        .heatmap-cell, .heatmap-head, .heatmap-rowlabel {
+            border-radius: 12px;
+            min-height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .heatmap-head {
+            background: rgba(255,255,255,0.06);
+            color: var(--muted);
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+
+        .heatmap-rowlabel {
+            justify-content: flex-start;
+            padding: 0 12px;
+            background: rgba(255,255,255,0.06);
+            color: var(--text);
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .heatmap-cell {
+            position: relative;
+            color: rgba(255,255,255,0.95);
+            font-size: 0.76rem;
+            font-weight: 800;
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: transform 0.14s ease, box-shadow 0.14s ease;
+        }
+
+        .heatmap-cell:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 0 2px rgba(255,255,255,0.15);
+            z-index: 2;
+        }
+
+        .heatmap-cell.empty {
+            background: rgba(255,255,255,0.03);
+            color: rgba(255,255,255,0.22);
+        }
+
+        .footer-note {
+            margin-top: 16px;
+            color: var(--muted);
+            font-size: 0.88rem;
+            line-height: 1.55;
+        }
+
+        .status {
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .loading, .empty {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 320px;
+            color: var(--muted);
+            text-align: center;
+            padding: 24px;
+        }
+
+        .spinner {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 3px solid rgba(255,255,255,0.12);
+            border-top-color: var(--accent);
+            animation: spin 0.85s linear infinite;
+            margin: 0 auto 12px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 1180px) {
+            .hero, .layout {
+                grid-template-columns: 1fr;
+            }
+
+            .field input {
+                min-width: 0;
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .shell {
+                padding: 16px;
+            }
+
+            .hero-card, .controls, .panel {
+                padding: 18px;
+                border-radius: 20px;
+            }
+
+            .meta-grid, .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 2.1rem;
+            }
+
+            .map-wrap, .map-frame {
+                min-height: 480px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="shell">
+        <section class="hero">
+            <div class="hero-card">
+                <div class="eyebrow">Trafikverket + SQLite</div>
+                <h1>Förseningar över Sverige</h1>
+                <p class="lede">
+                    En karta över stationernas genomsnittliga förseningar, plus en station-specifik heatmap som visar
+                    timme på x-axeln och veckodag på y-axeln. Allt räknas fram via SQL mot databasen som kollektorn sparar.
+                    Ja, vi låter databasen jobba. Chockerande koncept.
+                </p>
+                <div class="hero-actions">
+                    <a class="button primary" href="index.html">Tillbaka till dashboarden</a>
+                    <a class="button" href="#" id="copy-link">Kopiera länk till vald station</a>
+                </div>
+            </div>
+            <div class="meta-grid">
+                <div class="meta-card">
+                    <div class="meta-label">Aktuellt intervall</div>
+                    <div class="meta-value" id="active-range-label">Senaste 24 timmarna</div>
+                </div>
+                <div class="meta-card">
+                    <div class="meta-label">Vald station</div>
+                    <div class="meta-value" id="selected-station-meta">Laddar...</div>
+                </div>
+                <div class="meta-card">
+                    <div class="meta-label">Datastatus</div>
+                    <div class="meta-value" id="data-status">Laddar...</div>
+                </div>
+                <div class="meta-card">
+                    <div class="meta-label">Senast uppdaterad</div>
+                    <div class="meta-value" id="generated-at">-</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel controls">
+            <div class="range-group" id="range-group">
+                <button class="range-pill active" data-range="24h">24 timmar</button>
+                <button class="range-pill" data-range="week">7 dagar</button>
+                <button class="range-pill" data-range="month">30 dagar</button>
+            </div>
+            <div class="search-group">
+                <div class="field">
+                    <label for="station-input">Sök station</label>
+                    <input id="station-input" list="station-options" placeholder="Skriv stationnamn eller signatur" autocomplete="off">
+                    <datalist id="station-options"></datalist>
+                </div>
+            </div>
+        </section>
+
+        <section class="layout">
+            <div class="panel map-wrap">
+                <h2>Stationskarta</h2>
+                <div class="subtitle">Sverigekarta med färgkodade stationer för valt intervall</div>
+                <div id="map-container" class="map-frame">
+                    <div class="loading"><div><div class="spinner"></div><div>Laddar karta...</div></div></div>
+                </div>
+                <div class="legend" aria-label="Färgskala">
+                    <div class="legend-item"><span class="swatch" style="background:#22c55e"></span>&lt; 2 min</div>
+                    <div class="legend-item"><span class="swatch" style="background:#eab308"></span>15 min</div>
+                    <div class="legend-item"><span class="swatch" style="background:#ef4444"></span>1 h</div>
+                    <div class="legend-item"><span class="swatch" style="background:#a855f7"></span>2 h</div>
+                    <div class="legend-item"><span class="swatch" style="background:#000000"></span>&gt; 2 h</div>
+                </div>
+                <div class="map-caption">
+                    <span>Prickarna representerar stationer. Storlek = volym, färg = genomsnittlig försening.</span>
+                    <span id="map-count">-</span>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div id="station-panel">
+                    <div class="loading"><div><div class="spinner"></div><div>Laddar station...</div></div></div>
+                </div>
+            </div>
+        </section>
+
+        <p class="footer-note">
+            Beräkningar görs via SQL mot <code>train_announcements</code> och <code>train_stations</code>. Färgskalan är:
+            grön under 2 minuter, övergående till gul vid 15 minuter, röd vid 1 timme, lila vid 2 timmar och svart över det.
+        </p>
+    </main>
+
+    <script>
+        const DATA_URL = 'delay-heatmap-data.json';
+        const DAY_LABELS = ['Måndag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lördag', 'Söndag'];
+        const HOUR_LABELS = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'));
+        const RANGES = {
+            '24h': 'Senaste 24 timmarna',
+            'week': 'Senaste veckan',
+            'month': 'Senaste månaden',
+        };
+
+        const state = {
+            data: null,
+            rangeKey: '24h',
+            selectedStation: null,
+            stationIndexBySignature: new Map(),
+        };
+
+        const el = {};
+
+        function initElements() {
+            el.rangeGroup = document.getElementById('range-group');
+            el.stationInput = document.getElementById('station-input');
+            el.stationOptions = document.getElementById('station-options');
+            el.mapContainer = document.getElementById('map-container');
+            el.stationPanel = document.getElementById('station-panel');
+            el.activeRangeLabel = document.getElementById('active-range-label');
+            el.selectedStationMeta = document.getElementById('selected-station-meta');
+            el.dataStatus = document.getElementById('data-status');
+            el.generatedAt = document.getElementById('generated-at');
+            el.mapCount = document.getElementById('map-count');
+            el.copyLink = document.getElementById('copy-link');
+        }
+
+        function normalize(text) {
+            return (text || '')
+                .toString()
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^a-z0-9]+/g, '');
+        }
+
+        function clamp(value, min, max) {
+            return Math.min(max, Math.max(min, value));
+        }
+
+        function hexToRgb(hex) {
+            const clean = hex.replace('#', '');
+            return {
+                r: parseInt(clean.slice(0, 2), 16),
+                g: parseInt(clean.slice(2, 4), 16),
+                b: parseInt(clean.slice(4, 6), 16),
+            };
+        }
+
+        function rgbToHex({ r, g, b }) {
+            return '#' + [r, g, b].map((v) => clamp(Math.round(v), 0, 255).toString(16).padStart(2, '0')).join('');
+        }
+
+        function lerpColor(start, end, t) {
+            const a = hexToRgb(start);
+            const b = hexToRgb(end);
+            return rgbToHex({
+                r: a.r + (b.r - a.r) * t,
+                g: a.g + (b.g - a.g) * t,
+                b: a.b + (b.b - a.b) * t,
+            });
+        }
+
+        function delayColor(minutes) {
+            if (minutes === null || minutes === undefined || Number.isNaN(minutes)) {
+                return 'rgba(255,255,255,0.08)';
+            }
+            const value = Math.max(0, Number(minutes));
+            if (value <= 2) return '#22c55e';
+            if (value <= 15) return lerpColor('#22c55e', '#eab308', (value - 2) / 13);
+            if (value <= 60) return lerpColor('#eab308', '#ef4444', (value - 15) / 45);
+            if (value <= 120) return lerpColor('#ef4444', '#a855f7', (value - 60) / 60);
+            return '#000000';
+        }
+
+        function formatDelay(value) {
+            if (value === null || value === undefined || Number.isNaN(value)) {
+                return 'ingen data';
+            }
+            const sign = value < 0 ? '−' : '';
+            const abs = Math.abs(value);
+            return `${sign}${abs.toFixed(1)} min`;
+        }
+
+        function formatCount(value) {
+            return new Intl.NumberFormat('sv-SE').format(value || 0);
+        }
+
+        function formatMetaStation(station) {
+            if (!station) {
+                return 'Ingen data';
+            }
+            return station.name || station.signature || 'Okänd';
+        }
+
+        function getRangeData() {
+            return state.data?.ranges?.[state.rangeKey] || null;
+        }
+
+        function getStationCatalog() {
+            return state.data?.station_catalog || [];
+        }
+
+        function getStationIndex(signature) {
+            return state.stationIndexBySignature.get(signature) ?? null;
+        }
+
+        function getSelectedStation() {
+            const catalog = getStationCatalog();
+            if (!catalog.length) return null;
+            if (!state.selectedStation) return catalog[0];
+            return catalog.find((station) => station.signature === state.selectedStation) || catalog[0];
+        }
+
+        function resolveStation(query) {
+            const catalog = getStationCatalog();
+            const normalized = normalize(query);
+            if (!normalized) return null;
+
+            let exact = catalog.find((station) => normalize(station.signature) === normalized);
+            if (exact) return exact;
+
+            exact = catalog.find((station) => normalize(station.name) === normalized);
+            if (exact) return exact;
+
+            exact = catalog.find((station) => normalize(station.name).includes(normalized));
+            if (exact) return exact;
+
+            return catalog.find((station) => normalize(station.signature).includes(normalized)) || null;
+        }
+
+        function buildBucketsMap(rangeData, stationSignature) {
+            const grid = Array.from({ length: 7 }, () => Array.from({ length: 24 }, () => null));
+            const stationIndex = getStationIndex(stationSignature);
+            if (stationIndex === null) return grid;
+            (rangeData?.buckets || []).forEach((bucket) => {
+                if (bucket[0] !== stationIndex) return;
+                const day = Number(bucket[1]);
+                const hour = Number(bucket[2]);
+                if (Number.isInteger(day) && Number.isInteger(hour) && grid[day] && grid[day][hour] !== undefined) {
+                    grid[day][hour] = bucket;
+                }
+            });
+            return grid;
+        }
+
+        function renderStationMatrix(rangeData, station) {
+            const grid = buildBucketsMap(rangeData, station.signature);
+            const rows = [];
+            rows.push('<div class="heatmap-grid">');
+            rows.push('<div class="heatmap-head"></div>');
+            HOUR_LABELS.forEach((hour) => rows.push(`<div class="heatmap-head">${hour}</div>`));
+
+            DAY_LABELS.forEach((day, idx) => {
+                rows.push(`<div class="heatmap-rowlabel">${day}</div>`);
+                for (let hour = 0; hour < 24; hour += 1) {
+                    const bucket = grid[idx][hour];
+                    if (!bucket) {
+                        rows.push('<div class="heatmap-cell empty" title="Ingen data">-</div>');
+                        continue;
+                    }
+
+                    const avg = Number(bucket[4] || 0);
+                    const count = Number(bucket[3] || 0);
+                    const color = delayColor(avg);
+                    const textColor = color === '#000000' ? '#fff' : '#09111f';
+                    const opacity = clamp(0.28 + Math.min(count, 250) / 350, 0.28, 1);
+                    rows.push(
+                        `<div class="heatmap-cell" title="${day} kl ${String(hour).padStart(2, '0')}:00
+Medel: ${formatDelay(avg)}
+Antal: ${formatCount(count)}"`
+                        + ` style="background:${color};color:${textColor};opacity:${opacity}">`
+                        + `${avg.toFixed(1)}`
+                        + '</div>'
+                    );
+                }
+            });
+
+            rows.push('</div>');
+            return rows.join('');
+        }
+
+        function computeStationMetrics(rangeData, stationSignature) {
+            const stationIndex = getStationIndex(stationSignature);
+            const buckets = stationIndex === null
+                ? []
+                : (rangeData?.buckets || []).filter((bucket) => bucket[0] === stationIndex);
+            if (!buckets.length) {
+                return {
+                    total: 0,
+                    avgDelay: null,
+                    maxDelay: null,
+                    delayedCount: 0,
+                    busiestHour: null,
+                };
+            }
+
+            let total = 0;
+            let weightedDelay = 0;
+            let maxDelay = null;
+            const dayTotals = Array.from({ length: 24 }, () => 0);
+            const hourTotals = Array.from({ length: 24 }, () => 0);
+
+            buckets.forEach((bucket) => {
+                const count = Number(bucket[3] || 0);
+                const avg = Number(bucket[4] || 0);
+                total += count;
+                weightedDelay += avg * count;
+                hourTotals[Number(bucket[2])] += count;
+                dayTotals[Number(bucket[1])] += count;
+            });
+
+            const busiestHourIndex = hourTotals.reduce((bestIndex, value, index, arr) => value > arr[bestIndex] ? index : bestIndex, 0);
+            const stationSummary = (rangeData?.station_summaries || []).find((entry) => entry[0] === stationIndex);
+            return {
+                total,
+                avgDelay: total ? weightedDelay / total : null,
+                maxDelay: stationSummary ? stationSummary[3] : null,
+                busiestHour: total ? busiestHourIndex : null,
+            };
+        }
+
+        function renderSummary(rangeData, station) {
+            const metrics = computeStationMetrics(rangeData, station.signature);
+            const stationLabel = formatMetaStation(station);
+            const busiest = metrics.busiestHour === null ? '-' : `${String(metrics.busiestHour).padStart(2, '0')}:00`;
+
+            return `
+                <div class="station-name">${stationLabel}</div>
+                <div class="station-subtitle">${station.signature}${station.latitude && station.longitude ? ` · ${station.latitude.toFixed(3)}, ${station.longitude.toFixed(3)}` : ''}</div>
+                <div class="summary-grid">
+                    <div class="summary-card">
+                        <div class="label">Observationer</div>
+                        <div class="value">${formatCount(metrics.total)}</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="label">Medelförsening</div>
+                        <div class="value" style="color:${delayColor(metrics.avgDelay)}">${formatDelay(metrics.avgDelay)}</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="label">Maxförsening</div>
+                        <div class="value" style="color:${delayColor(metrics.maxDelay)}">${formatDelay(metrics.maxDelay)}</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="label">Bästa timmen</div>
+                        <div class="value">${busiest}</div>
+                    </div>
+                </div>
+                <div class="heatmap-shell">
+                    <div class="heatmap">
+                        ${renderStationMatrix(rangeData, station)}
+                    </div>
+                </div>
+                <div class="footer-note">
+                    Heatmapen visar genomsnittlig försening per dag och timme för vald station. Celler utan data visas gråa.
+                </div>
+            `;
+        }
+
+        function projectStation(lat, lon, bounds, width, height) {
+            const x = ((lon - bounds.minLon) / (bounds.maxLon - bounds.minLon)) * width;
+            const y = height - ((lat - bounds.minLat) / (bounds.maxLat - bounds.minLat)) * height;
+            return { x, y };
+        }
+
+        function renderMap(rangeData) {
+            const width = 1000;
+            const height = 1100;
+            const bounds = { minLon: 10.4, maxLon: 24.6, minLat: 54.8, maxLat: 69.7 };
+            const catalog = getStationCatalog();
+            const stations = (rangeData?.station_summaries || [])
+                .map((entry) => {
+                    const catalogStation = catalog[entry[0]];
+                    if (!catalogStation || !catalogStation.latitude || !catalogStation.longitude) return null;
+                    return {
+                        catalogStation,
+                        total: Number(entry[1] || 0),
+                        avg_delay: entry[2],
+                        max_delay: entry[3],
+                    };
+                })
+                .filter(Boolean);
+            const maxCount = stations.reduce((max, station) => Math.max(max, Number(station.total || 0)), 1);
+            const selected = getSelectedStation();
+            const selectedSignature = selected?.signature || null;
+
+            const dots = stations.map((station) => {
+                const point = projectStation(Number(station.catalogStation.latitude), Number(station.catalogStation.longitude), bounds, width, height);
+                const avg = Number(station.avg_delay || 0);
+                const count = Number(station.total || 0);
+                const size = 4 + Math.min(14, Math.sqrt(count / 7));
+                const opacity = clamp(0.38 + (count / maxCount) * 0.56, 0.38, 0.94);
+                const color = delayColor(avg);
+                const selectedRing = station.catalogStation.signature === selectedSignature
+                    ? `<circle cx="${point.x.toFixed(1)}" cy="${point.y.toFixed(1)}" r="${(size + 7).toFixed(1)}" fill="none" stroke="#ffffff" stroke-width="2.5" opacity="0.92"></circle>`
+                    : '';
+
+                return `
+                    ${selectedRing}
+                    <circle cx="${point.x.toFixed(1)}" cy="${point.y.toFixed(1)}" r="${size.toFixed(1)}" fill="${color}" opacity="${opacity}">
+                        <title>${station.catalogStation.name} (${station.catalogStation.signature})
+Observationer: ${formatCount(count)}
+Medel: ${formatDelay(avg)}
+ Max: ${formatDelay(station.max_delay)}</title>
+                    </circle>
+                `;
+            }).join('');
+
+            const lines = [
+                `<line x1="0" y1="${height / 2}" x2="${width}" y2="${height / 2}" stroke="rgba(255,255,255,0.05)" stroke-width="1" stroke-dasharray="8 10"></line>`,
+                `<line x1="${width * 0.25}" y1="0" x2="${width * 0.25}" y2="${height}" stroke="rgba(255,255,255,0.04)" stroke-width="1" stroke-dasharray="8 10"></line>`,
+                `<line x1="${width * 0.5}" y1="0" x2="${width * 0.5}" y2="${height}" stroke="rgba(255,255,255,0.04)" stroke-width="1" stroke-dasharray="8 10"></line>`,
+                `<line x1="${width * 0.75}" y1="0" x2="${width * 0.75}" y2="${height}" stroke="rgba(255,255,255,0.04)" stroke-width="1" stroke-dasharray="8 10"></line>`,
+            ].join('');
+
+            el.mapCount.textContent = `${formatCount(stations.length)} stationer med koordinater`;
+
+            return `
+                <svg viewBox="0 0 ${width} ${height}" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Sverigekarta med stationer">
+                    <defs>
+                        <radialGradient id="mapGlow" cx="50%" cy="40%" r="70%">
+                            <stop offset="0%" stop-color="rgba(110,231,255,0.08)"></stop>
+                            <stop offset="100%" stop-color="rgba(110,231,255,0)"></stop>
+                        </radialGradient>
+                    </defs>
+                    <rect x="0" y="0" width="${width}" height="${height}" fill="url(#mapGlow)"></rect>
+                    ${lines}
+                    <text x="28" y="48" fill="rgba(255,255,255,0.6)" font-size="22" font-weight="700">Norr</text>
+                    <text x="28" y="${height - 24}" fill="rgba(255,255,255,0.6)" font-size="22" font-weight="700">Söder</text>
+                    ${dots}
+                </svg>
+            `;
+        }
+
+        function updateStationOptions() {
+            const catalog = getStationCatalog();
+            el.stationOptions.innerHTML = catalog
+                .map((station) => `<option value="${station.name} (${station.signature})"></option>`)
+                .join('');
+        }
+
+        function updateMetaCards(rangeData) {
+            const generatedAt = state.data?.generated_at ? new Date(state.data.generated_at) : null;
+            el.generatedAt.textContent = generatedAt ? generatedAt.toLocaleString('sv-SE') : '-';
+            el.activeRangeLabel.textContent = RANGES[state.rangeKey] || state.rangeKey;
+            el.dataStatus.textContent = rangeData ? `${formatCount(rangeData.station_summaries?.length || 0)} stationer i intervallet` : 'Ingen data';
+        }
+
+        function render() {
+            if (!state.data) return;
+            const rangeData = getRangeData();
+            const station = getSelectedStation();
+            if (!rangeData || !station) {
+                el.stationPanel.innerHTML = '<div class="empty">Ingen stationdata hittades.</div>';
+                el.mapContainer.innerHTML = '<div class="empty">Ingen karta tillgänglig.</div>';
+                return;
+            }
+
+            updateMetaCards(rangeData);
+            el.selectedStationMeta.textContent = formatMetaStation(station);
+            el.mapContainer.innerHTML = renderMap(rangeData);
+            el.stationPanel.innerHTML = renderSummary(rangeData, station);
+            el.copyLink.href = `delay-heatmap.html?range=${state.rangeKey}&station=${encodeURIComponent(station.signature)}`;
+        }
+
+        function setRange(rangeKey) {
+            if (!RANGES[rangeKey]) return;
+            state.rangeKey = rangeKey;
+            document.querySelectorAll('.range-pill').forEach((button) => {
+                button.classList.toggle('active', button.dataset.range === rangeKey);
+            });
+            if (state.data) {
+                const rangeData = getRangeData();
+                const best = (rangeData?.station_summaries || [])[0];
+                if (best && !state.selectedStation) {
+                    const bestStation = getStationCatalog()[best[0]];
+                    if (bestStation) {
+                        state.selectedStation = bestStation.signature;
+                        el.stationInput.value = `${bestStation.name} (${bestStation.signature})`;
+                    }
+                }
+                render();
+            }
+        }
+
+        function setStationFromInput() {
+            const station = resolveStation(el.stationInput.value);
+            if (!station) {
+                el.selectedStationMeta.textContent = 'Ingen match';
+                return;
+            }
+            state.selectedStation = station.signature;
+            el.stationInput.value = `${station.name} (${station.signature})`;
+            render();
+        }
+
+        async function loadData() {
+            el.stationPanel.innerHTML = '<div class="loading"><div><div class="spinner"></div><div>Laddar data...</div></div></div>';
+            el.mapContainer.innerHTML = '<div class="loading"><div><div class="spinner"></div><div>Laddar karta...</div></div></div>';
+
+            const response = await fetch(`${DATA_URL}?t=${Date.now()}`);
+            if (!response.ok) {
+                throw new Error('Kunde inte ladda heatmap-data');
+            }
+
+            state.data = await response.json();
+            state.stationIndexBySignature = new Map(getStationCatalog().map((station, index) => [station.signature, index]));
+            updateStationOptions();
+
+            const params = new URLSearchParams(window.location.search);
+            const requestedRange = params.get('range');
+            const requestedStation = params.get('station');
+            if (requestedRange && RANGES[requestedRange]) {
+                state.rangeKey = requestedRange;
+                document.querySelectorAll('.range-pill').forEach((button) => {
+                    button.classList.toggle('active', button.dataset.range === requestedRange);
+                });
+            }
+
+            const rangeData = getRangeData();
+            const best = (rangeData?.station_summaries || [])[0];
+            const initialStation = requestedStation
+                ? (getStationCatalog().find((station) => station.signature === requestedStation) || resolveStation(requestedStation))
+                : null;
+
+            const fallbackStation = best ? getStationCatalog()[best[0]] : getStationCatalog()[0] || null;
+            state.selectedStation = (initialStation || fallbackStation || null)?.signature || null;
+            const selectedStation = getSelectedStation();
+            if (selectedStation) {
+                el.stationInput.value = `${selectedStation.name} (${selectedStation.signature})`;
+            }
+
+            render();
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            initElements();
+
+            el.rangeGroup.addEventListener('click', (event) => {
+                const button = event.target.closest('.range-pill');
+                if (!button) return;
+                setRange(button.dataset.range);
+            });
+
+            el.stationInput.addEventListener('change', setStationFromInput);
+            el.stationInput.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    setStationFromInput();
+                }
+            });
+
+            el.copyLink.addEventListener('click', async (event) => {
+                event.preventDefault();
+                const station = getSelectedStation();
+                if (!station) return;
+                const url = new URL(window.location.href);
+                url.searchParams.set('range', state.rangeKey);
+                url.searchParams.set('station', station.signature);
+                try {
+                    await navigator.clipboard.writeText(url.toString());
+                    el.copyLink.textContent = 'Länk kopierad';
+                    setTimeout(() => {
+                        el.copyLink.textContent = 'Kopiera länk till vald station';
+                    }, 1400);
+                } catch (error) {
+                    window.prompt('Kopiera länken:', url.toString());
+                }
+            });
+
+            try {
+                await loadData();
+            } catch (error) {
+                console.error(error);
+                el.dataStatus.textContent = 'Kunde inte ladda data';
+                el.selectedStationMeta.textContent = 'Kunde inte ladda';
+                el.mapContainer.innerHTML = '<div class="empty">Kunde inte ladda heatmap-data. Kolla att JSON-filen finns.</div>';
+                el.stationPanel.innerHTML = '<div class="empty">Kunde inte ladda heatmap-data. Kolla att JSON-filen finns.</div>';
+            }
+        });
+    </script>
+</body>
+</html>

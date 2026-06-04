@@ -856,6 +856,7 @@ Antal: ${formatCount(count)}"`
             let maxDelay = null;
             let delayedMaxDelay = null;
             const hourTotals = Array.from({ length: 24 }, () => 0);
+            const delayedHourTotals = Array.from({ length: 24 }, () => 0);
 
             buckets.forEach((bucket) => {
                 const count = Number(bucket[3] || 0);
@@ -879,9 +880,11 @@ Antal: ${formatCount(count)}"`
                     delayedMaxDelay = delayedMaxDelay === null ? delayedMax : Math.max(delayedMaxDelay, delayedMax);
                 }
                 hourTotals[Number(bucket[2])] += count;
+                delayedHourTotals[Number(bucket[2])] += delayed;
             });
 
-            const busiestHourIndex = hourTotals.reduce((bestIndex, value, index, arr) => value > arr[bestIndex] ? index : bestIndex, 0);
+            const activeHourTotals = state.delayedOnly ? delayedHourTotals : hourTotals;
+            const busiestHourIndex = activeHourTotals.reduce((bestIndex, value, index, arr) => value > arr[bestIndex] ? index : bestIndex, 0);
             return {
                 total,
                 delayedCount,

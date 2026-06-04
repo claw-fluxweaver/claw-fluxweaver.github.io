@@ -4,7 +4,7 @@
   "dbSizeBytes": 1267617792,
   "counts": {
     "train_announcements": 5807934,
-    "weather": 6505,
+    "weather": 6510,
     "weather_daily": 15,
     "electricity_prices": 0,
     "electricity_daily": 0,

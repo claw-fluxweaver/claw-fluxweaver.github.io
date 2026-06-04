@@ -175,7 +175,7 @@
             margin-bottom: 18px;
         }
 
-        .range-group, .search-group {
+        .range-group, .search-group, .metric-group, .filter-group {
             display: flex;
             flex-wrap: wrap;
             align-items: center;
@@ -202,6 +202,37 @@
             background: linear-gradient(135deg, #60a5fa, #9b8cff);
             border-color: transparent;
             color: white;
+        }
+
+        .filter-pill {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text);
+            border-radius: 999px;
+            padding: 10px 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+        }
+
+        .filter-pill:hover {
+            transform: translateY(-1px);
+            border-color: rgba(110, 231, 255, 0.3);
+        }
+
+        .filter-pill.active {
+            background: linear-gradient(135deg, #22c55e, #10b981);
+            border-color: transparent;
+            color: #06120d;
+        }
+
+        .control-label {
+            color: var(--muted);
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            margin-right: 2px;
         }
 
         .field {
@@ -270,6 +301,7 @@
                 linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)),
                 radial-gradient(circle at center, rgba(110, 231, 255, 0.05), transparent 60%);
             border: 1px solid rgba(255,255,255,0.05);
+            position: relative;
         }
 
         .map-caption {
@@ -523,6 +555,20 @@
                 <button class="range-pill" data-range="week">7 dagar</button>
                 <button class="range-pill" data-range="month">30 dagar</button>
             </div>
+            <div class="metric-group">
+                <span class="control-label">Karta</span>
+                <button class="range-pill active" data-map-metric="mean">Mean</button>
+                <button class="range-pill" data-map-metric="max">Max</button>
+            </div>
+            <div class="metric-group">
+                <span class="control-label">Vy</span>
+                <button class="range-pill active" data-station-metric="mean">Mean</button>
+                <button class="range-pill" data-station-metric="max">Max</button>
+            </div>
+            <div class="filter-group">
+                <span class="control-label">Filter</span>
+                <button class="filter-pill" data-filter-delayed="toggle">Bara försenade</button>
+            </div>
             <div class="search-group">
                 <div class="field">
                     <label for="station-input">Sök station</label>
@@ -580,6 +626,9 @@
             rangeKey: '24h',
             selectedStation: null,
             stationIndexBySignature: new Map(),
+            mapMetric: 'mean',
+            stationMetric: 'mean',
+            delayedOnly: false,
         };
 
         const el = {};
@@ -596,6 +645,9 @@
             el.generatedAt = document.getElementById('generated-at');
             el.mapCount = document.getElementById('map-count');
             el.copyLink = document.getElementById('copy-link');
+            el.mapMetricButtons = Array.from(document.querySelectorAll('[data-map-metric]'));
+            el.stationMetricButtons = Array.from(document.querySelectorAll('[data-station-metric]'));
+            el.filterDelayedButton = document.querySelector('[data-filter-delayed]');
         }
 
         function normalize(text) {
@@ -659,6 +711,20 @@
             return new Intl.NumberFormat('sv-SE').format(value || 0);
         }
 
+        function getMetricValue(record, metricKey, delayedOnly) {
+            if (!record) return null;
+            const useDelayed = delayedOnly ? 'delayed' : 'all';
+            if (metricKey === 'max') {
+                return useDelayed === 'delayed' ? record[8] : record[5];
+            }
+            return useDelayed === 'delayed' ? record[7] : record[4];
+        }
+
+        function getMetricCount(record, delayedOnly) {
+            if (!record) return 0;
+            return delayedOnly ? Number(record[6] || 0) : Number(record[3] || 0);
+        }
+
         function formatMetaStation(station) {
             if (!station) {
                 return 'Ingen data';
@@ -683,6 +749,10 @@
             if (!catalog.length) return null;
             if (!state.selectedStation) return catalog[0];
             return catalog.find((station) => station.signature === state.selectedStation) || catalog[0];
+        }
+
+        function getStationSummary(rangeData, stationIndex) {
+            return (rangeData?.station_summaries || []).find((entry) => entry[0] === stationIndex) || null;
         }
 
         function resolveStation(query) {
@@ -720,6 +790,7 @@
         function renderStationMatrix(rangeData, station) {
             const grid = buildBucketsMap(rangeData, station.signature);
             const rows = [];
+            const titleMetric = state.stationMetric === 'max' ? 'Max' : 'Mean';
             rows.push('<div class="heatmap-grid">');
             rows.push('<div class="heatmap-head"></div>');
             HOUR_LABELS.forEach((hour) => rows.push(`<div class="heatmap-head">${hour}</div>`));
@@ -733,17 +804,27 @@
                         continue;
                     }
 
-                    const avg = Number(bucket[4] || 0);
-                    const count = Number(bucket[3] || 0);
-                    const color = delayColor(avg);
+                    const value = getMetricValue(bucket, state.stationMetric, state.delayedOnly);
+                    const count = getMetricCount(bucket, state.delayedOnly);
+                    const delayedCount = Number(bucket[6] || 0);
+                    if (state.delayedOnly && delayedCount === 0) {
+                        rows.push('<div class="heatmap-cell empty" title="Inga försenade tåg">-</div>');
+                        continue;
+                    }
+                    if (value === null || value === undefined) {
+                        rows.push('<div class="heatmap-cell empty" title="Ingen data">-</div>');
+                        continue;
+                    }
+
+                    const color = delayColor(value);
                     const textColor = color === '#000000' ? '#fff' : '#09111f';
                     const opacity = clamp(0.28 + Math.min(count, 250) / 350, 0.28, 1);
                     rows.push(
                         `<div class="heatmap-cell" title="${day} kl ${String(hour).padStart(2, '0')}:00
-Medel: ${formatDelay(avg)}
+${titleMetric}: ${formatDelay(value)}
 Antal: ${formatCount(count)}"`
                         + ` style="background:${color};color:${textColor};opacity:${opacity}">`
-                        + `${avg.toFixed(1)}`
+                        + `${value.toFixed(1)}`
                         + '</div>'
                     );
                 }
@@ -769,26 +850,45 @@ Antal: ${formatCount(count)}"`
             }
 
             let total = 0;
+            let delayedCount = 0;
             let weightedDelay = 0;
+            let delayedWeightedDelay = 0;
             let maxDelay = null;
-            const dayTotals = Array.from({ length: 24 }, () => 0);
+            let delayedMaxDelay = null;
             const hourTotals = Array.from({ length: 24 }, () => 0);
 
             buckets.forEach((bucket) => {
                 const count = Number(bucket[3] || 0);
-                const avg = Number(bucket[4] || 0);
+                const avg = bucket[4] === null || bucket[4] === undefined ? null : Number(bucket[4]);
+                const max = bucket[5] === null || bucket[5] === undefined ? null : Number(bucket[5]);
+                const delayed = Number(bucket[6] || 0);
+                const delayedAvg = bucket[7] === null || bucket[7] === undefined ? null : Number(bucket[7]);
+                const delayedMax = bucket[8] === null || bucket[8] === undefined ? null : Number(bucket[8]);
                 total += count;
-                weightedDelay += avg * count;
+                delayedCount += delayed;
+                if (avg !== null) {
+                    weightedDelay += avg * count;
+                }
+                if (delayedAvg !== null) {
+                    delayedWeightedDelay += delayedAvg * delayed;
+                }
+                if (max !== null) {
+                    maxDelay = maxDelay === null ? max : Math.max(maxDelay, max);
+                }
+                if (delayedMax !== null) {
+                    delayedMaxDelay = delayedMaxDelay === null ? delayedMax : Math.max(delayedMaxDelay, delayedMax);
+                }
                 hourTotals[Number(bucket[2])] += count;
-                dayTotals[Number(bucket[1])] += count;
             });
 
             const busiestHourIndex = hourTotals.reduce((bestIndex, value, index, arr) => value > arr[bestIndex] ? index : bestIndex, 0);
-            const stationSummary = (rangeData?.station_summaries || []).find((entry) => entry[0] === stationIndex);
             return {
                 total,
+                delayedCount,
                 avgDelay: total ? weightedDelay / total : null,
-                maxDelay: stationSummary ? stationSummary[3] : null,
+                delayedAvgDelay: delayedCount ? delayedWeightedDelay / delayedCount : null,
+                maxDelay,
+                delayedMaxDelay,
                 busiestHour: total ? busiestHourIndex : null,
             };
         }
@@ -797,6 +897,11 @@ Antal: ${formatCount(count)}"`
             const metrics = computeStationMetrics(rangeData, station.signature);
             const stationLabel = formatMetaStation(station);
             const busiest = metrics.busiestHour === null ? '-' : `${String(metrics.busiestHour).padStart(2, '0')}:00`;
+            const valueLabel = state.stationMetric === 'max' ? 'Maxförsening' : 'Medelförsening';
+            const valueText = state.stationMetric === 'max'
+                ? (state.delayedOnly ? metrics.delayedMaxDelay : metrics.maxDelay)
+                : (state.delayedOnly ? metrics.delayedAvgDelay : metrics.avgDelay);
+            const countValue = state.delayedOnly ? metrics.delayedCount : metrics.total;
 
             return `
                 <div class="station-name">${stationLabel}</div>
@@ -804,15 +909,15 @@ Antal: ${formatCount(count)}"`
                 <div class="summary-grid">
                     <div class="summary-card">
                         <div class="label">Observationer</div>
-                        <div class="value">${formatCount(metrics.total)}</div>
+                        <div class="value">${formatCount(countValue)}</div>
                     </div>
                     <div class="summary-card">
-                        <div class="label">Medelförsening</div>
-                        <div class="value" style="color:${delayColor(metrics.avgDelay)}">${formatDelay(metrics.avgDelay)}</div>
+                        <div class="label">${valueLabel}</div>
+                        <div class="value" style="color:${delayColor(valueText)}">${formatDelay(valueText)}</div>
                     </div>
                     <div class="summary-card">
                         <div class="label">Maxförsening</div>
-                        <div class="value" style="color:${delayColor(metrics.maxDelay)}">${formatDelay(metrics.maxDelay)}</div>
+                        <div class="value" style="color:${delayColor(state.delayedOnly ? metrics.delayedMaxDelay : metrics.maxDelay)}">${formatDelay(state.delayedOnly ? metrics.delayedMaxDelay : metrics.maxDelay)}</div>
                     </div>
                     <div class="summary-card">
                         <div class="label">Bästa timmen</div>
@@ -825,7 +930,7 @@ Antal: ${formatCount(count)}"`
                     </div>
                 </div>
                 <div class="footer-note">
-                    Heatmapen visar genomsnittlig försening per dag och timme för vald station. Celler utan data visas gråa.
+                    Heatmapen visar ${state.stationMetric === 'max' ? 'maxförsening' : 'medelförsening'} per dag och timme för vald station${state.delayedOnly ? ' och filtrerar bort tåg som inte är försenade.' : ''}.
                 </div>
             `;
         }
@@ -850,20 +955,31 @@ Antal: ${formatCount(count)}"`
                         total: Number(entry[1] || 0),
                         avg_delay: entry[2],
                         max_delay: entry[3],
+                        delayed_count: Number(entry[4] || 0),
+                        delayed_avg_delay: entry[5],
+                        delayed_max_delay: entry[6],
                     };
                 })
-                .filter(Boolean);
-            const maxCount = stations.reduce((max, station) => Math.max(max, Number(station.total || 0)), 1);
+                .filter((station) => {
+                    if (!station) return false;
+                    return !state.delayedOnly || station.delayed_count > 0;
+                });
+            const maxCount = stations.reduce((max, station) => Math.max(max, Number(state.delayedOnly ? station.delayed_count : station.total || 0)), 1);
             const selected = getSelectedStation();
             const selectedSignature = selected?.signature || null;
 
             const dots = stations.map((station) => {
                 const point = projectStation(Number(station.catalogStation.latitude), Number(station.catalogStation.longitude), bounds, width, height);
-                const avg = Number(station.avg_delay || 0);
-                const count = Number(station.total || 0);
+                const metricValue = state.mapMetric === 'max'
+                    ? (state.delayedOnly ? station.delayed_max_delay : station.max_delay)
+                    : (state.delayedOnly ? station.delayed_avg_delay : station.avg_delay);
+                const count = Number(state.delayedOnly ? station.delayed_count : station.total || 0);
+                if (metricValue === null || metricValue === undefined) {
+                    return '';
+                }
                 const size = 4 + Math.min(14, Math.sqrt(count / 7));
                 const opacity = clamp(0.38 + (count / maxCount) * 0.56, 0.38, 0.94);
-                const color = delayColor(avg);
+                const color = delayColor(metricValue);
                 const selectedRing = station.catalogStation.signature === selectedSignature
                     ? `<circle cx="${point.x.toFixed(1)}" cy="${point.y.toFixed(1)}" r="${(size + 7).toFixed(1)}" fill="none" stroke="#ffffff" stroke-width="2.5" opacity="0.92"></circle>`
                     : '';
@@ -873,20 +989,23 @@ Antal: ${formatCount(count)}"`
                     <circle cx="${point.x.toFixed(1)}" cy="${point.y.toFixed(1)}" r="${size.toFixed(1)}" fill="${color}" opacity="${opacity}">
                         <title>${station.catalogStation.name} (${station.catalogStation.signature})
 Observationer: ${formatCount(count)}
-Medel: ${formatDelay(avg)}
- Max: ${formatDelay(station.max_delay)}</title>
+${state.mapMetric === 'max' ? 'Max' : 'Mean'}: ${formatDelay(metricValue)}
+Max all: ${formatDelay(station.max_delay)}
+Max delayed: ${formatDelay(station.delayed_max_delay)}</title>
                     </circle>
                 `;
             }).join('');
 
-            const lines = [
-                `<line x1="0" y1="${height / 2}" x2="${width}" y2="${height / 2}" stroke="rgba(255,255,255,0.05)" stroke-width="1" stroke-dasharray="8 10"></line>`,
-                `<line x1="${width * 0.25}" y1="0" x2="${width * 0.25}" y2="${height}" stroke="rgba(255,255,255,0.04)" stroke-width="1" stroke-dasharray="8 10"></line>`,
-                `<line x1="${width * 0.5}" y1="0" x2="${width * 0.5}" y2="${height}" stroke="rgba(255,255,255,0.04)" stroke-width="1" stroke-dasharray="8 10"></line>`,
-                `<line x1="${width * 0.75}" y1="0" x2="${width * 0.75}" y2="${height}" stroke="rgba(255,255,255,0.04)" stroke-width="1" stroke-dasharray="8 10"></line>`,
-            ].join('');
+            const outline = `
+                <path d="M425,105 C490,65 560,55 635,85 C706,113 760,170 790,248 C813,306 821,367 808,428 C796,482 768,527 744,567 C724,599 721,632 730,678 C742,740 738,809 719,861 C694,928 629,975 550,1002 C483,1026 410,1018 352,990 C296,964 262,925 246,879 C231,834 233,784 242,742 C253,694 248,651 222,613 C187,562 160,507 150,445 C138,373 150,305 184,249 C219,191 280,136 345,116 C372,107 398,104 425,105 Z"
+                      fill="rgba(255,255,255,0.045)" stroke="rgba(255,255,255,0.14)" stroke-width="2"/>
+                <path d="M560,118 C585,124 600,138 606,158 C611,176 604,197 591,210 C573,228 551,229 530,217 C509,205 499,181 502,158 C505,140 520,125 539,119 C546,117 553,116 560,118 Z"
+                      fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+            `;
 
-            el.mapCount.textContent = `${formatCount(stations.length)} stationer med koordinater`;
+            el.mapCount.textContent = state.delayedOnly
+                ? `${formatCount(stations.length)} stationer med förseningar`
+                : `${formatCount(stations.length)} stationer med koordinater`;
 
             return `
                 <svg viewBox="0 0 ${width} ${height}" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Sverigekarta med stationer">
@@ -897,9 +1016,9 @@ Medel: ${formatDelay(avg)}
                         </radialGradient>
                     </defs>
                     <rect x="0" y="0" width="${width}" height="${height}" fill="url(#mapGlow)"></rect>
-                    ${lines}
-                    <text x="28" y="48" fill="rgba(255,255,255,0.6)" font-size="22" font-weight="700">Norr</text>
-                    <text x="28" y="${height - 24}" fill="rgba(255,255,255,0.6)" font-size="22" font-weight="700">Söder</text>
+                    ${outline}
+                    <text x="320" y="60" fill="rgba(255,255,255,0.7)" font-size="22" font-weight="800">Norr</text>
+                    <text x="320" y="1040" fill="rgba(255,255,255,0.7)" font-size="22" font-weight="800">Söder</text>
                     ${dots}
                 </svg>
             `;
@@ -912,11 +1031,43 @@ Medel: ${formatDelay(avg)}
                 .join('');
         }
 
+        function updateControlState() {
+            el.mapMetricButtons.forEach((button) => {
+                button.classList.toggle('active', button.dataset.mapMetric === state.mapMetric);
+            });
+            el.stationMetricButtons.forEach((button) => {
+                button.classList.toggle('active', button.dataset.stationMetric === state.stationMetric);
+            });
+            el.filterDelayedButton.classList.toggle('active', state.delayedOnly);
+            el.filterDelayedButton.textContent = state.delayedOnly ? 'Bara försenade: på' : 'Bara försenade';
+        }
+
         function updateMetaCards(rangeData) {
             const generatedAt = state.data?.generated_at ? new Date(state.data.generated_at) : null;
             el.generatedAt.textContent = generatedAt ? generatedAt.toLocaleString('sv-SE') : '-';
             el.activeRangeLabel.textContent = RANGES[state.rangeKey] || state.rangeKey;
-            el.dataStatus.textContent = rangeData ? `${formatCount(rangeData.station_summaries?.length || 0)} stationer i intervallet` : 'Ingen data';
+            const visibleStations = rangeData?.station_summaries || [];
+            const delayedStations = visibleStations.filter((entry) => Number(entry[4] || 0) > 0).length;
+            el.dataStatus.textContent = rangeData
+                ? `${formatCount(visibleStations.length)} stationer, ${formatCount(delayedStations)} med förseningar`
+                : 'Ingen data';
+        }
+
+        function buildCurrentUrl() {
+            const url = new URL(window.location.href);
+            url.searchParams.set('range', state.rangeKey);
+            url.searchParams.set('mapMetric', state.mapMetric);
+            url.searchParams.set('stationMetric', state.stationMetric);
+            if (state.delayedOnly) {
+                url.searchParams.set('delayedOnly', '1');
+            } else {
+                url.searchParams.delete('delayedOnly');
+            }
+            const station = getSelectedStation();
+            if (station) {
+                url.searchParams.set('station', station.signature);
+            }
+            return url;
         }
 
         function render() {
@@ -929,22 +1080,30 @@ Medel: ${formatDelay(avg)}
                 return;
             }
 
+            updateControlState();
             updateMetaCards(rangeData);
             el.selectedStationMeta.textContent = formatMetaStation(station);
             el.mapContainer.innerHTML = renderMap(rangeData);
             el.stationPanel.innerHTML = renderSummary(rangeData, station);
-            el.copyLink.href = `delay-heatmap.html?range=${state.rangeKey}&station=${encodeURIComponent(station.signature)}`;
+            const url = buildCurrentUrl();
+            el.copyLink.href = url.toString();
+            window.history.replaceState({}, '', url);
         }
 
         function setRange(rangeKey) {
             if (!RANGES[rangeKey]) return;
             state.rangeKey = rangeKey;
             document.querySelectorAll('.range-pill').forEach((button) => {
-                button.classList.toggle('active', button.dataset.range === rangeKey);
+                if (button.dataset.range) {
+                    button.classList.toggle('active', button.dataset.range === rangeKey);
+                }
             });
             if (state.data) {
                 const rangeData = getRangeData();
-                const best = (rangeData?.station_summaries || [])[0];
+                const stationList = rangeData?.station_summaries || [];
+                const best = state.delayedOnly
+                    ? stationList.find((entry) => Number(entry[4] || 0) > 0) || stationList[0]
+                    : stationList[0];
                 if (best && !state.selectedStation) {
                     const bestStation = getStationCatalog()[best[0]];
                     if (bestStation) {
@@ -967,6 +1126,37 @@ Medel: ${formatDelay(avg)}
             render();
         }
 
+        function setMapMetric(metric) {
+            state.mapMetric = metric === 'max' ? 'max' : 'mean';
+            render();
+        }
+
+        function setStationMetric(metric) {
+            state.stationMetric = metric === 'max' ? 'max' : 'mean';
+            render();
+        }
+
+        function toggleDelayedOnly() {
+            state.delayedOnly = !state.delayedOnly;
+            const rangeData = getRangeData();
+            if (state.delayedOnly && rangeData) {
+                const selectedStation = getSelectedStation();
+                const stationIndex = getStationIndex(selectedStation.signature);
+                const selectedSummary = getStationSummary(rangeData, stationIndex);
+                if (!selectedSummary || Number(selectedSummary[4] || 0) === 0) {
+                    const fallback = (rangeData.station_summaries || []).find((entry) => Number(entry[4] || 0) > 0);
+                    if (fallback) {
+                        const fallbackStation = getStationCatalog()[fallback[0]];
+                        if (fallbackStation) {
+                            state.selectedStation = fallbackStation.signature;
+                            el.stationInput.value = `${fallbackStation.name} (${fallbackStation.signature})`;
+                        }
+                    }
+                }
+            }
+            render();
+        }
+
         async function loadData() {
             el.stationPanel.innerHTML = '<div class="loading"><div><div class="spinner"></div><div>Laddar data...</div></div></div>';
             el.mapContainer.innerHTML = '<div class="loading"><div><div class="spinner"></div><div>Laddar karta...</div></div></div>';
@@ -983,15 +1173,27 @@ Medel: ${formatDelay(avg)}
             const params = new URLSearchParams(window.location.search);
             const requestedRange = params.get('range');
             const requestedStation = params.get('station');
+            const requestedMapMetric = params.get('mapMetric');
+            const requestedStationMetric = params.get('stationMetric');
+            const requestedDelayedOnly = params.get('delayedOnly');
             if (requestedRange && RANGES[requestedRange]) {
                 state.rangeKey = requestedRange;
-                document.querySelectorAll('.range-pill').forEach((button) => {
-                    button.classList.toggle('active', button.dataset.range === requestedRange);
-                });
+            }
+            if (requestedMapMetric === 'max' || requestedMapMetric === 'mean') {
+                state.mapMetric = requestedMapMetric;
+            }
+            if (requestedStationMetric === 'max' || requestedStationMetric === 'mean') {
+                state.stationMetric = requestedStationMetric;
+            }
+            if (requestedDelayedOnly === '1' || requestedDelayedOnly === 'true') {
+                state.delayedOnly = true;
             }
 
             const rangeData = getRangeData();
-            const best = (rangeData?.station_summaries || [])[0];
+            const stationList = rangeData?.station_summaries || [];
+            const best = state.delayedOnly
+                ? stationList.find((entry) => Number(entry[4] || 0) > 0) || stationList[0]
+                : stationList[0];
             const initialStation = requestedStation
                 ? (getStationCatalog().find((station) => station.signature === requestedStation) || resolveStation(requestedStation))
                 : null;
@@ -1003,6 +1205,7 @@ Medel: ${formatDelay(avg)}
                 el.stationInput.value = `${selectedStation.name} (${selectedStation.signature})`;
             }
 
+            updateControlState();
             render();
         }
 
@@ -1015,6 +1218,16 @@ Medel: ${formatDelay(avg)}
                 setRange(button.dataset.range);
             });
 
+            el.mapMetricButtons.forEach((button) => {
+                button.addEventListener('click', () => setMapMetric(button.dataset.mapMetric));
+            });
+
+            el.stationMetricButtons.forEach((button) => {
+                button.addEventListener('click', () => setStationMetric(button.dataset.stationMetric));
+            });
+
+            el.filterDelayedButton.addEventListener('click', toggleDelayedOnly);
+
             el.stationInput.addEventListener('change', setStationFromInput);
             el.stationInput.addEventListener('keydown', (event) => {
                 if (event.key === 'Enter') {
@@ -1025,11 +1238,7 @@ Medel: ${formatDelay(avg)}
 
             el.copyLink.addEventListener('click', async (event) => {
                 event.preventDefault();
-                const station = getSelectedStation();
-                if (!station) return;
-                const url = new URL(window.location.href);
-                url.searchParams.set('range', state.rangeKey);
-                url.searchParams.set('station', station.signature);
+                const url = buildCurrentUrl();
                 try {
                     await navigator.clipboard.writeText(url.toString());
                     el.copyLink.textContent = 'Länk kopierad';

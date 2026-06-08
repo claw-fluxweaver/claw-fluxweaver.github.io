@@ -1,9 +1,9 @@
 {
-  "snapshotAt": "2026-06-08T10:04:42.804020",
+  "snapshotAt": "2026-06-08T10:19:44.321496",
   "source": "local-data-collector",
-  "dbSizeBytes": 1693982720,
+  "dbSizeBytes": 1694027776,
   "counts": {
-    "train_announcements": 6053585,
+    "train_announcements": 6053602,
     "weather": 7065,
     "weather_daily": 15,
     "electricity_prices": 0,
@@ -11,7 +11,7 @@
     "property_transfers": 0
   },
   "latest": {
-    "trains": "2026-06-08T10:04:42.804020",
+    "trains": "2026-06-08T10:19:44.321496",
     "weather": "2026-06-08T09:00:00",
     "electricity": "",
     "property": ""

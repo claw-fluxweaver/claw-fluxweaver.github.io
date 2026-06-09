@@ -38,6 +38,7 @@
         .trend-bar span { display: block; font-size: 0.68rem; color: rgba(15, 23, 42, 0.9); font-weight: 800; }
         .trend-bar strong { display: block; margin-top: 4px; font-size: 0.85rem; color: rgba(15, 23, 42, 0.95); }
         .trend-empty { color: #94a3b8; padding: 12px 0; }
+        .train-bar { background: linear-gradient(180deg, rgba(249, 115, 22, 0.95), rgba(234, 88, 12, 0.95)); }
         .split-panels { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 14px; }
         .split-panel h3 { margin: 0 0 10px; font-size: 0.92rem; color: #f8fafc; }
         .split-panel ul { list-style: none; display: grid; gap: 8px; }
@@ -112,11 +113,33 @@
                         <div class="history-bar" style="height: 0.1%; background: #22c55e;"><span class="tooltip">2026-05-10<br>0.1% försenade</span></div><div class="history-bar" style="height: 0.0%; background: #22c55e;"><span class="tooltip">2026-05-11<br>0.0% försenade</span></div><div class="history-bar" style="height: 0.0%; background: #22c55e;"><span class="tooltip">2026-05-12<br>0.0% försenade</span></div><div class="history-bar" style="height: 0.0%; background: #22c55e;"><span class="tooltip">2026-05-13<br>0.0% försenade</span></div><div class="history-bar" style="height: 0.0%; background: #22c55e;"><span class="tooltip">2026-05-14<br>0.0% försenade</span></div><div class="history-bar" style="height: 0.1%; background: #22c55e;"><span class="tooltip">2026-05-15<br>0.1% försenade</span></div><div class="history-bar" style="height: 1.9%; background: #22c55e;"><span class="tooltip">2026-05-16<br>1.9% försenade</span></div><div class="history-bar" style="height: 6.1%; background: #22c55e;"><span class="tooltip">2026-05-17<br>6.1% försenade</span></div><div class="history-bar" style="height: 6.2%; background: #22c55e;"><span class="tooltip">2026-05-18<br>6.2% försenade</span></div><div class="history-bar" style="height: 3.9%; background: #22c55e;"><span class="tooltip">2026-05-19<br>3.9% försenade</span></div><div class="history-bar" style="height: 3.4%; background: #22c55e;"><span class="tooltip">2026-05-20<br>3.4% försenade</span></div><div class="history-bar" style="height: 3.3%; background: #22c55e;"><span class="tooltip">2026-05-21<br>3.3% försenade</span></div><div class="history-bar" style="height: 10.1%; background: #22c55e;"><span class="tooltip">2026-05-22<br>10.1% försenade</span></div><div class="history-bar" style="height: 1.8%; background: #22c55e;"><span class="tooltip">2026-05-23<br>1.8% försenade</span></div><div class="history-bar" style="height: 1.3%; background: #22c55e;"><span class="tooltip">2026-05-24<br>1.3% försenade</span></div><div class="history-bar" style="height: 0.0%; background: #22c55e;"><span class="tooltip">2026-05-25<br>0.0% försenade</span></div><div class="history-bar" style="height: 0.0%; background: #22c55e;"><span class="tooltip">2026-05-26<br>0.0% försenade</span></div><div class="history-bar" style="height: 0.0%; background: #22c55e;"><span class="tooltip">2026-05-27<br>0.0% försenade</span></div><div class="history-bar" style="height: 0.0%; background: #22c55e;"><span class="tooltip">2026-05-28<br>0.0% försenade</span></div><div class="history-bar" style="height: 0.0%; background: #22c55e;"><span class="tooltip">2026-05-29<br>0.0% försenade</span></div><div class="history-bar" style="height: 0.0%; background: #22c55e;"><span class="tooltip">2026-05-30<br>0.0% försenade</span></div><div class="history-bar" style="height: 0.0%; background: #22c55e;"><span class="tooltip">2026-05-31<br>0.0% försenade</span></div><div class="history-bar" style="height: 0.0%; background: #22c55e;"><span class="tooltip">2026-06-01<br>0.0% försenade</span></div><div class="history-bar" style="height: 0.0%; background: #22c55e;"><span class="tooltip">2026-06-02<br>0.0% försenade</span></div><div class="history-bar" style="height: 0.0%; background: #22c55e;"><span class="tooltip">2026-06-03<br>0.0% försenade</span></div><div class="history-bar" style="height: 0.1%; background: #22c55e;"><span class="tooltip">2026-06-04<br>0.1% försenade</span></div><div class="history-bar" style="height: 0.6%; background: #22c55e;"><span class="tooltip">2026-06-05<br>0.6% försenade</span></div><div class="history-bar" style="height: 0.0%; background: #22c55e;"><span class="tooltip">2026-06-06<br>0.0% försenade</span></div><div class="history-bar" style="height: 0.0%; background: #22c55e;"><span class="tooltip">2026-06-07<br>0.0% försenade</span></div><div class="history-bar" style="height: 0.0%; background: #22c55e;"><span class="tooltip">2026-06-08<br>0.0% försenade</span></div><div class="history-bar" style="height: 0.0%; background: #22c55e;"><span class="tooltip">2026-06-09<br>0.0% försenade</span></div>
                     </div>
                 </div>
-                
+
+                <div class="trend">
+                    <h3>📉 Senaste 7 dagarna</h3>
+                    <div class="trend-chart">
+                        <div class="trend-bar train-bar" style="height: 8%;"><span>06-02</span><strong>0.0%</strong></div><div class="trend-bar train-bar" style="height: 8%;"><span>06-03</span><strong>0.0%</strong></div><div class="trend-bar train-bar" style="height: 8%;"><span>06-04</span><strong>0.1%</strong></div><div class="trend-bar train-bar" style="height: 10%;"><span>06-05</span><strong>0.6%</strong></div><div class="trend-bar train-bar" style="height: 8%;"><span>06-06</span><strong>0.0%</strong></div><div class="trend-bar train-bar" style="height: 8%;"><span>06-07</span><strong>0.0%</strong></div><div class="trend-bar train-bar" style="height: 8%;"><span>06-08</span><strong>0.0%</strong></div><div class="trend-bar train-bar" style="height: 8%;"><span>06-09</span><strong>0.0%</strong></div>
+                    </div>
+                </div>
+
                 <div class="history-section">
                     <h3>Fördelning av förseningar</h3>
                     <div class="histogram">
                         <div class="hist-bar"><div class="hist-bar-value"><div class="hist-bar-fill" style="height: 96.6%;"></div></div><div class="hist-label">0 (i tid)<br>5,918,668</div></div><div class="hist-bar"><div class="hist-bar-value"><div class="hist-bar-fill" style="height: 3.1%;"></div></div><div class="hist-label">1-10<br>192,902</div></div><div class="hist-bar"><div class="hist-bar-value"><div class="hist-bar-fill" style="height: 0.2%;"></div></div><div class="hist-label">11-20<br>10,730</div></div><div class="hist-bar"><div class="hist-bar-value"><div class="hist-bar-fill" style="height: 0.0%;"></div></div><div class="hist-label">21-30<br>2,350</div></div><div class="hist-bar"><div class="hist-bar-value"><div class="hist-bar-fill" style="height: 0.0%;"></div></div><div class="hist-label">31-60<br>1,593</div></div><div class="hist-bar"><div class="hist-bar-value"><div class="hist-bar-fill" style="height: 0.0%;"></div></div><div class="hist-label">60+<br>359</div></div>
+                    </div>
+                </div>
+
+                <div class="split-panels">
+                    <div class="split-panel">
+                        <h3>Störst försening per station</h3>
+                        <ul>
+                            <li><span>Tri</span><strong>1,713 förs.</strong></li><li><span>Hie</span><strong>1,522 förs.</strong></li><li><span>Mc</span><strong>1,476 förs.</strong></li>
+                        </ul>
+                    </div>
+                    <div class="split-panel">
+                        <h3>Värsta enskilda förseningar</h3>
+                        <ul>
+                            <li><span>U 846m</span><strong>19:09</strong></li><li><span>Gnb 844m</span><strong>16:01</strong></li><li><span>Ök 612m</span><strong>08:36</strong></li>
+                        </ul>
                     </div>
                 </div>
             </div>

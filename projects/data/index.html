@@ -32,6 +32,16 @@
         .mini-list li span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .mini-list li strong { color: #f8fafc; font-size: 1rem; }
         .property-note { color: #94a3b8; font-size: 0.9rem; margin-top: 10px; line-height: 1.5; }
+        .trend { margin-top: 16px; }
+        .trend-chart { height: 140px; display: grid; grid-template-columns: repeat(auto-fit, minmax(42px, 1fr)); align-items: end; gap: 8px; }
+        .trend-bar { position: relative; min-height: 18px; border-radius: 10px 10px 4px 4px; background: linear-gradient(180deg, rgba(234, 179, 8, 0.95), rgba(249, 115, 22, 0.95)); display: flex; flex-direction: column; justify-content: flex-end; padding: 10px 8px 8px; overflow: hidden; }
+        .trend-bar span { display: block; font-size: 0.68rem; color: rgba(15, 23, 42, 0.9); font-weight: 800; }
+        .trend-bar strong { display: block; margin-top: 4px; font-size: 0.85rem; color: rgba(15, 23, 42, 0.95); }
+        .trend-empty { color: #94a3b8; padding: 12px 0; }
+        .split-panels { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 14px; }
+        .split-panel h3 { margin: 0 0 10px; font-size: 0.92rem; color: #f8fafc; }
+        .split-panel ul { list-style: none; display: grid; gap: 8px; }
+        .split-panel li { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 8px 10px; border-radius: 10px; background: rgba(51, 65, 85, 0.7); color: #cbd5e1; }
         
         .history-section { margin-top: 30px; }
         .history-section h3 { color: #00d4ff; margin-bottom: 15px; }
@@ -148,12 +158,20 @@
                 <h2>⚡ Elpriser</h2>
                 <div class="stats">
                     <div class="stat">
-                        <div class="stat-label">Totalt</div>
+                        <div class="stat-label">Senaste dag</div>
+                        <div class="stat-value">2026-06-09</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Mätpunkter</div>
                         <div class="stat-value">96</div>
                     </div>
                     <div class="stat">
                         <div class="stat-label">Snitt</div>
                         <div class="stat-value">1.01 kr</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Spread</div>
+                        <div class="stat-value">1.34 kr</div>
                     </div>
                     <div class="stat">
                         <div class="stat-label">Lägst</div>
@@ -162,6 +180,28 @@
                     <div class="stat">
                         <div class="stat-label">Högst</div>
                         <div class="stat-value" style="color: #ef4444;">1.58 kr</div>
+                    </div>
+                </div>
+
+                <div class="trend">
+                    <h3>📈 Dagstrend</h3>
+                    <div class="trend-chart">
+                        <div class="trend-bar" style="height: 71%;"><span>06-08</span><strong>1.18</strong></div><div class="trend-bar" style="height: 60%;"><span>06-09</span><strong>1.00</strong></div>
+                    </div>
+                </div>
+
+                <div class="split-panels">
+                    <div class="split-panel">
+                        <h3>Dyraste timmarna</h3>
+                        <ul>
+                            <li><span>07:00</span><strong>1.58 kr</strong></li><li><span>18:45</span><strong>1.54 kr</strong></li><li><span>08:00</span><strong>1.51 kr</strong></li>
+                        </ul>
+                    </div>
+                    <div class="split-panel">
+                        <h3>Billigaste timmarna</h3>
+                        <ul>
+                            <li><span>16:00</span><strong>0.24 kr</strong></li><li><span>12:45</span><strong>0.25 kr</strong></li><li><span>15:00</span><strong>0.30 kr</strong></li>
+                        </ul>
                     </div>
                 </div>
             </div>

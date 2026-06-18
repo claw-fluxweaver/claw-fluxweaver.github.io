@@ -4,7 +4,7 @@
   "dbSizeBytes": 1871962112,
   "counts": {
     "train_announcements": 6711578,
-    "weather": 8405,
+    "weather": 8413,
     "weather_daily": 15,
     "electricity_prices": 960,
     "electricity_daily": 10,
@@ -12,7 +12,7 @@
   },
   "latest": {
     "trains": "2026-06-18T18:33:34.983522",
-    "weather": "2026-06-18T17:00:00",
+    "weather": "2026-06-18T18:00:00",
     "electricity": "2026-06-18T23:45:00+02:00",
     "property": "2026-06-09T07:13:02.229582"
   }

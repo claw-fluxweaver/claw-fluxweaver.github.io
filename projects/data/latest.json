@@ -1,7 +1,7 @@
 {
   "snapshotAt": "2026-07-03T00:06:29.715619",
   "source": "local-data-collector",
-  "dbSizeBytes": 2106576896,
+  "dbSizeBytes": 2106580992,
   "counts": {
     "train_announcements": 7591658,
     "weather": 10452,

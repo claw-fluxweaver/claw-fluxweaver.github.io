@@ -3,7 +3,7 @@
   "source": "local-data-collector",
   "dbSizeBytes": 2114719744,
   "counts": {
-    "train_announcements": 7622123,
+    "train_announcements": 7622133,
     "weather": 10577,
     "weather_daily": 15,
     "electricity_prices": 2304,

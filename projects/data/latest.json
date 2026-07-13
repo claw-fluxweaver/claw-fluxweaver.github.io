@@ -1,10 +1,10 @@
 {
   "snapshotAt": "2026-07-13T21:45:00",
   "source": "local-data-collector",
-  "dbSizeBytes": 2282864640,
+  "dbSizeBytes": 2282868736,
   "counts": {
     "train_announcements": 8245941,
-    "weather": 11817,
+    "weather": 11822,
     "weather_daily": 15,
     "electricity_prices": 3264,
     "electricity_daily": 34,
@@ -12,7 +12,7 @@
   },
   "latest": {
     "trains": "2026-07-13T12:50:39.702509",
-    "weather": "2026-07-13T11:00:00",
+    "weather": "2026-07-13T12:00:00",
     "electricity": "2026-07-13T23:45:00+02:00",
     "property": "2026-06-09T07:13:02.229582"
   }
